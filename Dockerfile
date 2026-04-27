@@ -66,12 +66,6 @@ RUN cp /home/${USERNAME}/setup/welcome-motd.sh /etc/profile.d/welcome.sh && \
 RUN touch /home/${USERNAME}/.first_login && \
     chown ${USERNAME}:${USERNAME} /home/${USERNAME}/.first_login
 
-# Set hostname in /etc/hostname and /etc/hosts
-RUN echo "${CONTAINER_HOSTNAME}" > /etc/hostname && \
-    echo "127.0.0.1       localhost" > /etc/hosts && \
-    echo "::1             localhost" >> /etc/hosts && \
-    echo "127.0.1.1       ${CONTAINER_HOSTNAME}" >> /etc/hosts
-
 # Install ngrok if requested
 RUN if [ "$INSTALL_NGROK" = "true" ]; then \
         echo "Installing ngrok..." && \
@@ -80,6 +74,9 @@ RUN if [ "$INSTALL_NGROK" = "true" ]; then \
 
 # Cleanup
 RUN rm -rf /tmp/setup-repo /tmp/user-setup
+
+# Set hostname (done late to ensure no conflicts)
+RUN echo "${CONTAINER_HOSTNAME}" > /etc/hostname
 
 # Create working directory
 WORKDIR /app
