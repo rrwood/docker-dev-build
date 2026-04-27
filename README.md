@@ -2,371 +2,245 @@
 
 A containerized development environment with Claude CLI, SSH access, and support for Claude Code + Gemini integration via LiteLLM.
 
-## 📖 Documentation
+## 🚀 Quick Deploy with Portainer
 
-- **👉 [START_HERE.md](START_HERE.md)** - **NEW USER? START HERE!** 🌟
-- **[SETUP_OPTIONS.md](SETUP_OPTIONS.md)** - Compare all setup methods 🔀
-- **[PORTAINER_QUICK_START.md](PORTAINER_QUICK_START.md)** - Deploy to Portainer in 5 minutes 🐳
-- **[QUICKSTART.md](QUICKSTART.md)** - Auto-deploy in 5 minutes ⚡
-- **[PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)** - Project layout and file reference 📁
-- **[scripts/README.md](scripts/README.md)** - Helper scripts documentation 🛠️
+**The easiest way to deploy this container is using Portainer.**
+
+See **[PORTAINER_DEPLOY.md](PORTAINER_DEPLOY.md)** for complete Portainer deployment instructions.
+
+### Quick Steps:
+
+1. **Create stack in Portainer**
+2. **Point to GitHub repository**: `https://github.com/rrwood/docker-dev-build`
+3. **Configure environment variables** (username, password, IP address)
+4. **Deploy** - Portainer automatically pulls setup scripts from GitHub and builds
 
 ## Features
 
 - **Alpine Linux** base image for minimal footprint
-- **Claude CLI** optional installation
+- **Claude CLI** - optional installation during build
 - **SSH Server** with user-only access (root login disabled)
 - **Password and Key-based authentication** supported
-- **Automated setup** with interactive configuration script
-- **Optional ngrok** installation via helper script
+- **Automated setup** - scripts pulled from GitHub during Docker build
 - **LiteLLM integration** for using Gemini with Claude Code (free alternative to Anthropic API)
+- **Optional ngrok** installation during build or post-deployment
+- **Portainer-optimized** - designed for easy Portainer stack deployment
 
-## Quick Start (Automated Setup)
+## Documentation
 
-**The easiest way to get started is using the interactive setup script:**
+- **[PORTAINER_DEPLOY.md](PORTAINER_DEPLOY.md)** - Deploy to Portainer (Recommended) 🐳
+- **[scripts/README.md](scripts/README.md)** - Helper scripts documentation 🛠️
+- **[PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)** - Project layout and file reference 📁
 
-### Linux/Mac/WSL:
-```bash
-./setup.sh
-```
+## Manual Deployment (Alternative)
 
-### Windows - Option 1 (Pure PowerShell - No dependencies):
-```batch
-setup-powershell.bat
-```
-or run directly:
-```powershell
-.\setup.ps1
-```
+If you prefer not to use Portainer:
 
-### Windows - Option 2 (Git Bash or WSL):
-```batch
-setup.bat
-```
-
-The setup script will:
-- ✅ Prompt for username and password
-- ✅ Ask if you want Claude CLI and/or ngrok pre-installed
-- ✅ Optionally generate SSH keys and configure SSH config
-- ✅ Generate Dockerfile and docker-compose.yml
-- ✅ (Bash version only) Build and start the container automatically
-
-**PowerShell version** generates files for manual Portainer deployment.
-**Bash version** can also build and start automatically.
-
-**That's it! Follow the prompts and you'll be up and running in minutes.**
-
-## Manual Setup (Advanced)
-
-If you prefer manual configuration:
-
-### 1. Build the Container
+### 1. Clone Repository
 
 ```bash
-docker-compose build
+git clone https://github.com/rrwood/docker-dev-build.git
+cd docker-dev-build
 ```
 
-### 2. Start the Container
+### 2. Configure Environment
+
+```bash
+cp .env.example .env
+nano .env  # Edit with your settings
+```
+
+### 3. Create Macvlan Network (if not exists)
+
+```bash
+docker network create -d macvlan \
+  --subnet=192.168.111.0/24 \
+  --gateway=192.168.111.1 \
+  --ip-range=192.168.111.200/29 \
+  -o parent=eth0 \
+  dev-macvlan
+```
+
+### 4. Build and Deploy
 
 ```bash
 docker-compose up -d
 ```
 
-### 3. Access the Container
-
-**Default credentials (if you didn't run setup.sh):**
-- Username: `devuser`
-- Password: (set in Dockerfile)
-- SSH Port: `22`
+### 5. Access Container
 
 ```bash
-# SSH into the container
-ssh devuser@192.168.111.15  # Or your configured IP
-
-# Or use docker exec
-docker exec -it docker-dev su - devuser
+ssh devuser@192.168.111.15
+# Or: docker exec -it docker-dev su - devuser
 ```
 
-### 4. Change Default Password
+## Configuration
 
-```bash
-# Inside the container
-passwd
+All configuration is done via environment variables in `.env` file:
+
+```env
+# Container Settings
+USERNAME=devuser                    # Container user
+USER_PASSWORD=changeme123          # User password
+CONTAINER_NAME=docker-dev          # Container name
+HOSTNAME=docker-dev                # Hostname
+CONTAINER_IP=192.168.111.15       # IP address
+
+# Optional Components
+INSTALL_CLAUDE=true               # Install Claude CLI
+INSTALL_NGROK=false              # Install ngrok
+NGROK_AUTH_TOKEN=                # ngrok auth token
+
+# Workspace
+WORKSPACE_PATH=./workspace       # Host path for /app volume
+TIMEZONE=UTC                     # Container timezone
 ```
 
-### 5. (Optional) Add SSH Key
+## Available Helper Scripts
+
+Scripts are automatically installed from GitHub during build:
+
+### setup-litellm
+Setup LiteLLM proxy for Claude Code + Gemini integration (free alternative to Anthropic API)
 
 ```bash
-# On your host machine
-ssh-copy-id devuser@192.168.111.15
-
-# Or manually
-cat ~/.ssh/id_rsa.pub | ssh devuser@192.168.111.15 "cat >> ~/.ssh/authorized_keys"
-```
-
-## What the Setup Script Does
-
-The `setup.sh` script provides an interactive way to configure your container:
-
-1. **Prompts for configuration:**
-   - Container username and password
-   - Container hostname and IP address
-   - Optional: Auto-install Claude CLI
-   - Optional: Auto-install ngrok (with auth token)
-
-2. **SSH key management (if accessing from setup machine):**
-   - Generates an SSH key pair (`~/.ssh/docker-dev-container`)
-   - Updates `~/.ssh/config` with connection details
-   - Copies public key to container's authorized_keys
-
-3. **Generates custom Dockerfile:**
-   - Based on your selections
-   - Includes only requested components
-
-4. **Updates docker-compose.yml:**
-   - Sets hostname and IP address
-   - Preserves network configuration
-
-5. **Builds and starts container:**
-   - Optional automatic build
-   - Copies SSH keys if configured
-   - Tests SSH connection
-
-**Example Setup Session:**
-```bash
-$ ./setup.sh
-
-======================================
-Docker Development Container Setup
-======================================
-
-Enter username for container user [devuser]: myuser
-Enter password for myuser: ****
-Confirm password: ****
-Enter container hostname [docker-dev]: dev-server
-Enter container IP address [192.168.111.15]: 192.168.111.50
-
-Install Claude CLI automatically? [Y/n]: y
-Install ngrok automatically? [y/N]: n
-
-Will you access this container from THIS machine? [Y/n]: y
-SSH key will be created at: /home/user/.ssh/docker-dev-container
-
-[Configuration summary displayed]
-
-Proceed with this configuration? [Y/n]: y
-
-✓ Dockerfile generated successfully
-✓ docker-compose.yml updated
-✓ SSH key generated
-✓ Container built successfully
-✓ Container started
-✓ SSH keys copied
-✓ SSH connection verified!
-
-Container is running and ready to use!
-```
-
-## Optional Tools
-
-### Install ngrok
-
-If you need ngrok for exposing local services:
-
-```bash
-# Inside the container
-install-ngrok
-
-# With auth token
-install-ngrok YOUR_AUTH_TOKEN
-```
-
-### Setup LiteLLM (Claude Code + Gemini Integration)
-
-Use Gemini models for free with Claude Code (no Anthropic subscription required):
-
-```bash
-# Inside the container
 setup-litellm
 ```
 
-This will:
-1. Install LiteLLM with proxy support
-2. Create configuration files in `~/.config/litellm/`
-3. Generate example environment file
-4. Create helper scripts for starting the proxy
-
-**After running setup-litellm:**
-
-1. Edit `~/.config/litellm/.env` and add your Google API key:
-   ```bash
-   nano ~/.config/litellm/.env
-   ```
-   Get your API key from: https://aistudio.google.com/app/apikey
-
-2. Start the LiteLLM proxy:
-   ```bash
-   ~/.config/litellm/start-litellm.sh
-   ```
-
-3. In another terminal, export Claude environment variables:
-   ```bash
-   source ~/.config/litellm/export-claude-env.sh
-   ```
-
-4. Run Claude Code:
-   ```bash
-   claude
-   ```
-
-**Available Gemini Models:**
-- `gemini-2.5-flash` (default, fastest)
-- `gemini-2.0-flash-exp` (experimental)
-- `gemini-pro` (can be enabled in config)
-
-**Optional: Create systemd service for LiteLLM**
-
-To run LiteLLM automatically on container start, create a systemd service (Alpine uses OpenRC, so adapt as needed):
+### install-ngrok
+Install ngrok for exposing local services (if not installed during build)
 
 ```bash
-# For systems with systemd, create:
-# /etc/systemd/system/litellm.service
-
-[Unit]
-Description=LiteLLM Proxy for Claude Code
-After=network.target
-
-[Service]
-Type=simple
-User=devuser
-WorkingDirectory=/home/devuser
-EnvironmentFile=/home/devuser/.config/litellm/.env
-ExecStart=/usr/bin/litellm --config /home/devuser/.config/litellm/litellm_config.yaml --port 4000
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
+install-ngrok [AUTH_TOKEN]
 ```
 
-## Security Notes
+### setup-claude
+Install Claude CLI (if not installed during build)
 
-1. **Change default password immediately** after first login
-2. **Root SSH login is disabled** for security
-3. `devuser` has sudo access without password (change in Dockerfile if needed)
-4. Store API keys in `.env` files and **never commit them to git**
-5. Add `.env` to `.gitignore`
+```bash
+setup-claude
+```
+
+See **[scripts/README.md](scripts/README.md)** for detailed documentation.
+
+## LiteLLM Setup (Claude Code + Gemini)
+
+Use Gemini models for free with Claude Code:
+
+```bash
+# 1. Inside container, run setup
+setup-litellm
+
+# 2. Add your Google API key
+nano ~/.config/litellm/.env
+# Get key from: https://aistudio.google.com/app/apikey
+
+# 3. Start LiteLLM proxy
+~/.config/litellm/start-litellm.sh
+
+# 4. In another terminal, export environment variables
+source ~/.config/litellm/export-claude-env.sh
+
+# 5. Run Claude Code
+claude
+```
+
+## How It Works
+
+### Build Process
+
+When Portainer (or docker-compose) builds the container:
+
+1. **Dockerfile clones this GitHub repository** during build
+2. **Setup scripts are copied** from `scripts/` directory
+3. **Optional components installed** based on build arguments (Claude CLI, ngrok)
+4. **Scripts available** in `/usr/local/bin/` for use
+5. **Repository is cleaned up** after scripts are copied
+
+### No Manual Setup Required
+
+Unlike traditional approaches, you don't need to:
+- Run setup scripts on your host machine
+- Manually copy files into the container
+- Keep scripts in sync
+
+Everything is **pulled fresh from GitHub** during each build.
 
 ## Customization
 
-### Add More Users
+### Use Different GitHub Branch
 
-```bash
-# Inside container
-sudo adduser newuser
-sudo passwd newuser
-sudo mkdir -p /home/newuser/.ssh
-sudo chmod 700 /home/newuser/.ssh
-sudo chown newuser:newuser /home/newuser/.ssh
-
-# Optional: Add to sudoers
-echo 'newuser ALL=(ALL) NOPASSWD:ALL' | sudo tee /etc/sudoers.d/newuser
+Set in `.env`:
+```env
+GITHUB_BRANCH=develop
 ```
 
-### Modify SSH Configuration
+### Use Forked Repository
 
-Edit `/etc/ssh/sshd_config` and restart SSH:
-
-```bash
-sudo nano /etc/ssh/sshd_config
-sudo rc-service sshd restart
+Set in `.env`:
+```env
+GITHUB_REPO=https://github.com/YOUR_USERNAME/docker-dev-build.git
 ```
 
-### Available Gemini Models in LiteLLM
+### Modify Scripts
 
-Edit `~/.config/litellm/litellm_config.yaml` to add or modify models:
+1. Fork the repository
+2. Modify scripts in `scripts/` directory
+3. Point `GITHUB_REPO` to your fork
+4. Rebuild container
 
-```yaml
-model_list:
-  - model_name: gemini-2.5-flash
-    litellm_params:
-      model: gemini/gemini-2.5-flash
-      api_key: os.environ/GOOGLE_API_KEY
+## Security Notes
 
-  - model_name: gemini-pro
-    litellm_params:
-      model: gemini/gemini-pro
-      api_key: os.environ/GOOGLE_API_KEY
-```
+1. **Change default password** - Set strong password in `USER_PASSWORD`
+2. **Root SSH login disabled** for security
+3. User has sudo access without password (change in Dockerfile if needed)
+4. **Store API keys in `.env`** and never commit them
+5. `.env` is in `.gitignore`
 
-See all available models: https://docs.litellm.ai/docs/providers/gemini
+## Network Configuration
+
+The docker-compose.yml uses **macvlan networking** for direct network access.
+
+Adjust for your network:
+- `CONTAINER_IP` - IP address for container
+- Network settings in `docker network create` command
 
 ## Troubleshooting
 
 ### SSH Connection Issues
 
 ```bash
-# Check SSH service status
-docker exec -it adobe-dev rc-service sshd status
+# Check SSH service
+docker exec -it docker-dev rc-service sshd status
 
-# Restart SSH service
-docker exec -it adobe-dev rc-service sshd restart
+# Restart SSH
+docker exec -it docker-dev rc-service sshd restart
 
-# Check logs
-docker logs adobe-dev
+# View logs
+docker logs docker-dev
 ```
 
-### LiteLLM Proxy Issues
+### Build Issues
 
 ```bash
-# Check if proxy is running
-curl http://localhost:4000/health
+# Check build logs
+docker-compose build --no-cache
 
-# View proxy logs
-# (check terminal where start-litellm.sh is running)
-
-# Test with curl
-curl -X POST http://localhost:4000/v1/messages \
-  -H "Content-Type: application/json" \
-  -H "x-api-key: DUMMY_KEY" \
-  -d '{
-    "model": "gemini-2.5-flash",
-    "max_tokens": 100,
-    "messages": [{"role": "user", "content": "Hello"}]
-  }'
+# In Portainer: Stacks → docker-dev → Build logs
 ```
 
-### Claude Code Not Connecting
+### LiteLLM Issues
 
-1. Verify environment variables are set:
-   ```bash
-   echo $ANTHROPIC_BASE_URL
-   echo $ANTHROPIC_MODEL
-   ```
+```bash
+# Check proxy health
+curl http://localhost:4000/health
 
-2. Ensure LiteLLM proxy is running on port 4000
+# Verify environment variables
+echo $ANTHROPIC_BASE_URL
+echo $ANTHROPIC_MODEL
 
-3. Check Google API key is valid in `~/.config/litellm/.env`
-
-4. Try exporting variables again:
-   ```bash
-   source ~/.config/litellm/export-claude-env.sh
-   ```
-
-## Network Configuration
-
-The docker-compose.yml uses macvlan networking. Adjust settings for your network:
-
-```yaml
-networks:
-  adobe-macvlan:
-    driver: macvlan
-    driver_opts:
-      parent: eth0  # Change to your network interface
-    ipam:
-      config:
-        - subnet: 192.168.111.0/24      # Your subnet
-          gateway: 192.168.111.1         # Your gateway
-          ip_range: 192.168.111.200/29   # Container IP range
+# Re-export
+source ~/.config/litellm/export-claude-env.sh
 ```
 
 ## References
@@ -374,8 +248,8 @@ networks:
 - [Claude Code Documentation](https://claude.ai/docs)
 - [LiteLLM Documentation](https://docs.litellm.ai/)
 - [Gemini API Documentation](https://ai.google.dev/gemini-api/docs)
-- [Setup Guide: Claude Code + Gemini (Medium)](https://prince-arora-aws.medium.com/how-i-set-up-claude-code-for-free-no-subscription-no-credit-card-and-what-i-learned-along-the-2cba880682a2)
-- [Troubleshooting: Claude Code + Gemini (Medium)](https://prince-arora-aws.medium.com/my-claude-code-gemini-setup-broke-heres-what-was-actually-happening-de00e84a29cf)
+- [Portainer Documentation](https://docs.portainer.io/)
+- [Docker Macvlan Networks](https://docs.docker.com/network/macvlan/)
 
 ## License
 

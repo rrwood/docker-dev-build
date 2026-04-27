@@ -23,10 +23,14 @@ authorized_keys
 # Docker volumes
 *.log
 
-# Generated files (created by setup scripts)
+# Push script (local only - not committed to repo)
+push.sh
+push.ps1
+deploy.sh
+
+# Generated files
 copy-ssh-keys.sh
 copy-ssh-keys.ps1
-PORTAINER_DEPLOYMENT.md
 
 # Docker/Portainer specific (may be customized per user)
 # Uncomment if you don't want to version these:
@@ -35,3 +39,8 @@ PORTAINER_DEPLOYMENT.md
 
 # User-specific files
 ngrok.yml
+
+# Local-only files and temporary files
+*.local
+.DS_Store
+Thumbs.db

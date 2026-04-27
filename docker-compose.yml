@@ -1,19 +1,30 @@
-  version: '3.8'
+version: '3.8'
 
-  services:
-    docker-dev:
-      build: .
-      container_name: docker-dev
-      hostname: docker-dev
-      restart: unless-stopped
-      networks:
-        dev-macvlan:
-          ipv4_address: 192.168.111.15
-      volumes:
-        - ./workspace:/app
-      cap_add:
-        - NET_ADMIN
+services:
+  docker-dev:
+    build:
+      context: .
+      args:
+        USERNAME: ${USERNAME:-devuser}
+        USER_PASSWORD: ${USER_PASSWORD:-changeme123}
+        INSTALL_CLAUDE: ${INSTALL_CLAUDE:-true}
+        INSTALL_NGROK: ${INSTALL_NGROK:-false}
+        NGROK_AUTH_TOKEN: ${NGROK_AUTH_TOKEN:-}
+        GITHUB_REPO: ${GITHUB_REPO:-https://github.com/rrwood/docker-dev-build.git}
+        GITHUB_BRANCH: ${GITHUB_BRANCH:-main}
+    container_name: ${CONTAINER_NAME:-docker-dev}
+    hostname: ${HOSTNAME:-docker-dev}
+    restart: unless-stopped
+    networks:
+      dev-macvlan:
+        ipv4_address: ${CONTAINER_IP:-192.168.111.15}
+    volumes:
+      - ${WORKSPACE_PATH:-./workspace}:/app
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - TZ=${TIMEZONE:-UTC}
 
-  networks:
-    dev-macvlan:
-      external: true
+networks:
+  dev-macvlan:
+    external: true

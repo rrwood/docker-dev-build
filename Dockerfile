@@ -1,5 +1,14 @@
 FROM alpine:latest
 
+# Build arguments for customization
+ARG USERNAME=devuser
+ARG USER_PASSWORD=changeme123
+ARG INSTALL_CLAUDE=true
+ARG INSTALL_NGROK=false
+ARG NGROK_AUTH_TOKEN=""
+ARG GITHUB_REPO=https://github.com/rrwood/docker-dev-build.git
+ARG GITHUB_BRANCH=main
+
 # Install base packages
 RUN apk add --no-cache \
     python3 \
@@ -15,8 +24,14 @@ RUN apk add --no-cache \
     sudo \
     shadow
 
-# Install Claude CLI
-RUN curl -fsSL https://claude.ai/install.sh | sh
+# Clone repository to get setup scripts
+RUN git clone --depth 1 --branch ${GITHUB_BRANCH} ${GITHUB_REPO} /tmp/setup-repo
+
+# Install Claude CLI if requested
+RUN if [ "$INSTALL_CLAUDE" = "true" ]; then \
+        echo "Installing Claude CLI..." && \
+        curl -fsSL https://claude.ai/install.sh | sh; \
+    fi
 
 # Setup SSH - disable root login, allow user login with password and keys
 RUN ssh-keygen -A && \
@@ -25,22 +40,32 @@ RUN ssh-keygen -A && \
     sed -i 's/#PubkeyAuthentication.*/PubkeyAuthentication yes/' /etc/ssh/sshd_config && \
     sed -i 's/#AuthorizedKeysFile.*/AuthorizedKeysFile .ssh\/authorized_keys/' /etc/ssh/sshd_config
 
-# Create a default user (you can customize this)
-RUN adduser -D -s /bin/bash devuser && \
-    echo 'devuser:changeme123' | chpasswd && \
-    mkdir -p /home/devuser/.ssh && \
-    chmod 700 /home/devuser/.ssh && \
-    chown -R devuser:devuser /home/devuser/.ssh && \
-    echo 'devuser ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/devuser
+# Create user with provided credentials
+RUN adduser -D -s /bin/bash ${USERNAME} && \
+    echo "${USERNAME}:${USER_PASSWORD}" | chpasswd && \
+    mkdir -p /home/${USERNAME}/.ssh && \
+    chmod 700 /home/${USERNAME}/.ssh && \
+    chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.ssh && \
+    echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/${USERNAME}
 
-# Copy helper scripts
-COPY scripts/install-ngrok.sh /usr/local/bin/install-ngrok
-COPY scripts/setup-litellm.sh /usr/local/bin/setup-litellm
-RUN chmod +x /usr/local/bin/install-ngrok /usr/local/bin/setup-litellm
+# Copy helper scripts from cloned repo
+RUN cp /tmp/setup-repo/scripts/install-ngrok.sh /usr/local/bin/install-ngrok && \
+    cp /tmp/setup-repo/scripts/setup-litellm.sh /usr/local/bin/setup-litellm && \
+    cp /tmp/setup-repo/scripts/setup-claude.sh /usr/local/bin/setup-claude && \
+    chmod +x /usr/local/bin/install-ngrok /usr/local/bin/setup-litellm /usr/local/bin/setup-claude
+
+# Install ngrok if requested
+RUN if [ "$INSTALL_NGROK" = "true" ]; then \
+        echo "Installing ngrok..." && \
+        /usr/local/bin/install-ngrok ${NGROK_AUTH_TOKEN}; \
+    fi
+
+# Cleanup
+RUN rm -rf /tmp/setup-repo
 
 # Create working directory
 WORKDIR /app
-RUN chown devuser:devuser /app
+RUN chown ${USERNAME}:${USERNAME} /app
 
 # Expose SSH port
 EXPOSE 22

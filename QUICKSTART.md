@@ -1,221 +1,221 @@
 # Quick Start Guide
 
-Get your development container running in 5 minutes!
+## Deploy with Portainer (Recommended)
 
-## Prerequisites
+### Prerequisites
+- Portainer installed and running
+- Macvlan network named `dev-macvlan` (see below if you need to create it)
 
-- Docker and Docker Compose installed
-- Git Bash (Windows) or Bash shell (Linux/Mac)
-- Network access to pull Docker images
+### Steps
 
-## Step 1: Run Setup Script
+1. **In Portainer, create a new Stack**
+   - Go to **Stacks** → **Add stack**
+   - Name: `docker-dev`
 
-### Linux/Mac/WSL:
-```bash
-cd /path/to/devserverdocker
-./setup.sh
-```
+2. **Choose Git Repository**
+   - Repository URL: `https://github.com/rrwood/docker-dev-build`
+   - Reference: `refs/heads/main`
+   - Compose path: `docker-compose.yml`
 
-### Windows (PowerShell/CMD):
-```batch
-cd C:\path\to\devserverdocker
-setup.bat
-```
+3. **Add Environment Variables**
+   
+   Click **Add environment variable** for each:
+   
+   ```env
+   USERNAME=devuser
+   USER_PASSWORD=YOUR_SECURE_PASSWORD
+   CONTAINER_NAME=docker-dev
+   HOSTNAME=docker-dev
+   CONTAINER_IP=192.168.111.15
+   INSTALL_CLAUDE=true
+   INSTALL_NGROK=false
+   WORKSPACE_PATH=./workspace
+   TIMEZONE=UTC
+   ```
 
-## Step 2: Follow the Prompts
+4. **Deploy the stack**
+   
+   Click **Deploy the stack** - Portainer will:
+   - Clone the GitHub repository
+   - Pull setup scripts during build
+   - Build the container
+   - Start the container
 
-The script will ask you:
+5. **Access your container**
+   
+   ```bash
+   ssh devuser@192.168.111.15
+   ```
 
-1. **Username and Password**
-   - Choose a username for the container (default: `devuser`)
-   - Set a secure password
+**That's it!** No manual setup scripts needed.
 
-2. **Container Details**
-   - Hostname (default: `docker-dev`)
-   - IP address (default: `192.168.111.15`)
+---
 
-3. **Optional Components**
-   - Install Claude CLI? (recommended: **Yes**)
-   - Install ngrok? (only if needed)
+## Create Macvlan Network (If Needed)
 
-4. **SSH Setup**
-   - Will you access from this machine? (recommended: **Yes**)
-   - Automatically sets up SSH keys and config
-
-5. **Build Container?**
-   - Build and start now? (recommended: **Yes**)
-
-## Step 3: Connect to Container
-
-If you selected SSH setup, simply run:
-
-```bash
-ssh <container-hostname>
-
-# Example:
-ssh docker-dev
-```
-
-Or connect manually:
+If the `dev-macvlan` network doesn't exist:
 
 ```bash
-ssh <username>@<ip-address>
-
-# Example:
-ssh myuser@192.168.111.50
+docker network create -d macvlan \
+  --subnet=192.168.111.0/24 \
+  --gateway=192.168.111.1 \
+  --ip-range=192.168.111.200/29 \
+  -o parent=eth0 \
+  dev-macvlan
 ```
 
-## Step 4: Setup LiteLLM (Optional - for Free Claude Code)
+**Adjust for your network:**
+- `--subnet` - Your network subnet
+- `--gateway` - Your network gateway
+- `--ip-range` - Range for container IPs
+- `-o parent` - Your network interface (eth0, ens18, etc.)
 
-Once inside the container:
+---
+
+## Manual Deployment (Alternative)
+
+If not using Portainer:
 
 ```bash
-# 1. Setup LiteLLM
+# 1. Clone repository
+git clone https://github.com/rrwood/docker-dev-build.git
+cd docker-dev-build
+
+# 2. Configure
+cp .env.example .env
+nano .env  # Edit settings
+
+# 3. Deploy
+docker-compose up -d
+
+# 4. Access
+ssh devuser@192.168.111.15
+```
+
+---
+
+## Post-Deployment Setup
+
+### Setup LiteLLM (Claude Code + Gemini)
+
+Use free Gemini models with Claude Code:
+
+```bash
+# Inside container
 setup-litellm
 
-# 2. Edit the .env file and add your Google API key
+# Add Google API key
 nano ~/.config/litellm/.env
-# Get your key from: https://aistudio.google.com/app/apikey
 
-# 3. Start the LiteLLM proxy (in one terminal)
+# Start proxy
 ~/.config/litellm/start-litellm.sh
 
-# 4. In another terminal, export environment variables
+# In another terminal
 source ~/.config/litellm/export-claude-env.sh
-
-# 5. Run Claude Code
 claude
 ```
+
+Get your Google API key: https://aistudio.google.com/app/apikey
+
+### Install ngrok (if not installed during build)
+
+```bash
+install-ngrok YOUR_AUTH_TOKEN
+```
+
+---
 
 ## Common Commands
 
 ### Container Management
 ```bash
-# Start container
-docker-compose up -d
-
-# Stop container
-docker-compose down
-
-# Rebuild container
-docker-compose build
-
 # View logs
 docker logs docker-dev
 
 # Access container shell
 docker exec -it docker-dev su - devuser
+
+# Restart container
+docker restart docker-dev
 ```
 
 ### Inside Container
 ```bash
-# Install ngrok (if not done during setup)
-install-ngrok
-
-# Install Claude CLI (if not done during setup)
-setup-claude
-
 # Setup Claude Code + Gemini
 setup-litellm
 
+# Install ngrok (if not done during build)
+install-ngrok
+
+# Install Claude CLI (if not done during build)
+setup-claude
+
 # Change password
 passwd
-
-# Check SSH keys
-ls -la ~/.ssh/
 ```
 
-## SSH Connection Info
-
-After setup, your SSH config (`~/.ssh/config`) will have:
-
-```
-Host <container-hostname>
-    HostName <ip-address>
-    User <username>
-    IdentityFile ~/.ssh/docker-dev-container
-    StrictHostKeyChecking no
-    UserKnownHostsFile /dev/null
-```
-
-This allows you to simply run:
-```bash
-ssh <container-hostname>
-```
+---
 
 ## Troubleshooting
 
 ### Can't connect via SSH
 
-1. Check container is running:
-   ```bash
-   docker ps | grep docker-dev
-   ```
+```bash
+# Check container is running
+docker ps | grep docker-dev
 
-2. Test network connectivity:
-   ```bash
-   ping <container-ip>
-   ```
+# Test network connectivity
+ping 192.168.111.15
 
-3. Try password authentication:
-   ```bash
-   ssh -o PreferredAuthentications=password <username>@<ip-address>
-   ```
+# Check SSH service
+docker exec docker-dev rc-service sshd status
 
-4. Check SSH service in container:
-   ```bash
-   docker exec docker-dev rc-service sshd status
-   ```
+# Restart SSH service
+docker exec docker-dev rc-service sshd restart
+```
 
 ### Container won't start
 
-1. Check Docker logs:
-   ```bash
-   docker logs docker-dev
-   ```
+```bash
+# View logs
+docker logs docker-dev
 
-2. Verify network configuration:
-   ```bash
-   docker network ls
-   ```
+# Verify network exists
+docker network ls | grep dev-macvlan
 
-3. Try rebuilding:
-   ```bash
-   docker-compose down
-   docker-compose build --no-cache
-   docker-compose up -d
-   ```
+# In Portainer: Stacks → docker-dev → Build logs
+```
 
 ### LiteLLM not connecting
 
-1. Verify proxy is running:
-   ```bash
-   curl http://localhost:4000/health
-   ```
+```bash
+# Check proxy health
+curl http://localhost:4000/health
 
-2. Check environment variables:
-   ```bash
-   env | grep ANTHROPIC
-   ```
+# Check environment variables
+env | grep ANTHROPIC
 
-3. Verify Google API key:
-   ```bash
-   cat ~/.config/litellm/.env
-   ```
+# Verify Google API key
+cat ~/.config/litellm/.env
+```
 
-## Next Steps
+---
 
-- Read the full [README.md](README.md) for advanced configuration
-- Check [scripts/README.md](scripts/README.md) for helper script documentation
-- Set up your development environment inside the container
-- Configure Claude Code with Gemini for free AI assistance
+## Key Features
 
-## Need Help?
+✅ **No manual setup scripts** - Everything pulled from GitHub during build  
+✅ **Portainer-optimized** - Deploy as a stack with Git integration  
+✅ **Automatic updates** - Pull and redeploy to get latest changes  
+✅ **Customizable** - Configure via environment variables  
+✅ **Helper scripts included** - setup-litellm, install-ngrok, setup-claude  
 
-- Full documentation: [README.md](README.md)
-- Script documentation: [scripts/README.md](scripts/README.md)
-- LiteLLM docs: https://docs.litellm.ai/
-- Claude Code docs: https://claude.ai/docs
+---
+
+## Need More Info?
+
+- **[PORTAINER_DEPLOY.md](PORTAINER_DEPLOY.md)** - Full Portainer deployment guide
+- **[README.md](README.md)** - Complete documentation
+- **[scripts/README.md](scripts/README.md)** - Helper scripts reference
 
 ---
 
