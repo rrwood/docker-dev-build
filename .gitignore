@@ -2,9 +2,10 @@
 .env
 *.env
 !.env.example
+!portainer.env
 env.*
 !env.example
-!portainer.env
+*.home.env
 user.env
 
 # Claude Code settings and project-specific instructions
