@@ -38,10 +38,10 @@ RUNTIME_HOSTNAME=$(hostname)
 echo "hostname (runtime):        $RUNTIME_HOSTNAME"
 
 # Check what Docker passed as environment variable
-if [ -n "$DOCKER_HOSTNAME" ]; then
-    echo "DOCKER_HOSTNAME (env):     $DOCKER_HOSTNAME"
+if [ -n "$BUILD_HOSTNAME" ]; then
+    echo "BUILD_HOSTNAME (env):      $BUILD_HOSTNAME"
 else
-    echo "DOCKER_HOSTNAME (env):     [not set]"
+    echo "BUILD_HOSTNAME (env):      [not set]"
 fi
 
 # Username
@@ -80,18 +80,18 @@ else
     echo "   Using runtime hostname: $RUNTIME_HOSTNAME"
 fi
 
-# Additional check - was HOSTNAME env var passed to container?
-if [ -n "$DOCKER_HOSTNAME" ]; then
+# Additional check - was CONTAINER_HOSTNAME env var passed to container?
+if [ -n "$BUILD_HOSTNAME" ]; then
     echo ""
     echo "📋 Environment Variable Check:"
-    if [ "$DOCKER_HOSTNAME" = "$RUNTIME_HOSTNAME" ]; then
-        echo "   ✅ HOSTNAME env var matches runtime: $DOCKER_HOSTNAME"
+    if [ "$BUILD_HOSTNAME" = "$RUNTIME_HOSTNAME" ]; then
+        echo "   ✅ CONTAINER_HOSTNAME env var matches runtime: $BUILD_HOSTNAME"
     else
-        echo "   ❌ HOSTNAME env var ($DOCKER_HOSTNAME) ≠ runtime ($RUNTIME_HOSTNAME)"
+        echo "   ❌ CONTAINER_HOSTNAME env var ($BUILD_HOSTNAME) ≠ runtime ($RUNTIME_HOSTNAME)"
         echo "   This indicates a Portainer bug with hostname: field"
         echo ""
-        echo "   WORKAROUND: Use docker_hostname field instead of hostname"
-        echo "   See: PORTAINER_ENV_FILE.md"
+        echo "   FIX: Set CONTAINER_HOSTNAME in env.rw.home (not HOSTNAME)"
+        echo "   HOSTNAME is reserved by Portainer and doesn't work"
     fi
 fi
 
