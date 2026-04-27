@@ -60,12 +60,12 @@ This script will:
 
 **Install Claude CLI:**
 ```bash
-setup-claude
+./setup-claude.sh
 ```
 
 **Install ngrok (if needed):**
 ```bash
-install-ngrok YOUR_AUTH_TOKEN
+./install-ngrok.sh YOUR_AUTH_TOKEN
 ```
 
 ### Step 3: Setup Claude Code with Gemini (Free Alternative)
@@ -74,7 +74,7 @@ Use Google's Gemini models for free instead of paying for Anthropic API:
 
 ```bash
 # 1. Setup LiteLLM
-setup-litellm
+./setup-litellm.sh
 
 # 2. Get your Google API key from: https://aistudio.google.com/app/apikey
 
@@ -197,7 +197,7 @@ which litellm
 which ngrok
 
 # View available setup scripts
-ls -la /usr/local/bin/ | grep setup
+ls -la ~/setup/
 
 # Update package list
 sudo apk update

@@ -118,7 +118,7 @@ Use free Gemini models with Claude Code:
 
 ```bash
 # Inside container
-setup-litellm
+~/setup/setup-litellm.sh
 
 # Add Google API key
 nano ~/.config/litellm/.env
@@ -136,7 +136,7 @@ Get your Google API key: https://aistudio.google.com/app/apikey
 ### Install ngrok (if not installed during build)
 
 ```bash
-install-ngrok YOUR_AUTH_TOKEN
+~/setup/install-ngrok.sh YOUR_AUTH_TOKEN
 ```
 
 ---
@@ -158,13 +158,13 @@ docker restart docker-dev
 ### Inside Container
 ```bash
 # Setup Claude Code + Gemini
-setup-litellm
+~/setup/setup-litellm.sh
 
 # Install ngrok (if not done during build)
-install-ngrok
+~/setup/install-ngrok.sh
 
 # Install Claude CLI (if not done during build)
-setup-claude
+~/setup/setup-claude.sh
 
 # Change password
 passwd

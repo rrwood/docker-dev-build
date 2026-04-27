@@ -107,7 +107,7 @@ cd ~/setup
 
 ```bash
 # Inside container
-setup-claude
+~/setup/setup-claude.sh
 ```
 
 ## Troubleshooting

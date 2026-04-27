@@ -127,27 +127,27 @@ TIMEZONE=UTC                     # Container timezone
 
 ## Available Helper Scripts
 
-Scripts are automatically installed from GitHub during build:
+Scripts are automatically installed from GitHub during build to `~/setup/`:
 
-### setup-litellm
+### setup-litellm.sh
 Setup LiteLLM proxy for Claude Code + Gemini integration (free alternative to Anthropic API)
 
 ```bash
-setup-litellm
+~/setup/setup-litellm.sh
 ```
 
-### install-ngrok
+### install-ngrok.sh
 Install ngrok for exposing local services (if not installed during build)
 
 ```bash
-install-ngrok [AUTH_TOKEN]
+~/setup/install-ngrok.sh [AUTH_TOKEN]
 ```
 
-### setup-claude
+### setup-claude.sh
 Install Claude CLI (if not installed during build)
 
 ```bash
-setup-claude
+~/setup/setup-claude.sh
 ```
 
 See **[scripts/README.md](scripts/README.md)** for detailed documentation.
@@ -158,7 +158,7 @@ Use Gemini models for free with Claude Code:
 
 ```bash
 # 1. Inside container, run setup
-setup-litellm
+~/setup/setup-litellm.sh
 
 # 2. Add your Google API key
 nano ~/.config/litellm/.env

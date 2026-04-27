@@ -34,15 +34,12 @@ RUN ssh-keygen -A && \
     sed -i 's/#PubkeyAuthentication.*/PubkeyAuthentication yes/' /etc/ssh/sshd_config && \
     sed -i 's/#AuthorizedKeysFile.*/AuthorizedKeysFile .ssh\/authorized_keys/' /etc/ssh/sshd_config
 
-# Copy helper scripts from cloned repo to /usr/local/bin
-RUN cp /tmp/setup-repo/scripts/install-ngrok.sh /usr/local/bin/install-ngrok && \
-    cp /tmp/setup-repo/scripts/setup-litellm.sh /usr/local/bin/setup-litellm && \
-    cp /tmp/setup-repo/scripts/setup-claude.sh /usr/local/bin/setup-claude && \
-    chmod +x /usr/local/bin/install-ngrok /usr/local/bin/setup-litellm /usr/local/bin/setup-claude
-
-# Prepare setup scripts for user directory
+# Prepare setup scripts for user directory (includes both setup/ and scripts/ directories)
 RUN mkdir -p /tmp/user-setup && \
     cp -r /tmp/setup-repo/setup/* /tmp/user-setup/ && \
+    cp /tmp/setup-repo/scripts/install-ngrok.sh /tmp/user-setup/ && \
+    cp /tmp/setup-repo/scripts/setup-litellm.sh /tmp/user-setup/ && \
+    cp /tmp/setup-repo/scripts/setup-claude.sh /tmp/user-setup/ && \
     chmod +x /tmp/user-setup/*.sh
 
 # Create user with provided credentials
@@ -69,7 +66,7 @@ RUN touch /home/${USERNAME}/.first_login && \
 # Install ngrok if requested
 RUN if [ "$INSTALL_NGROK" = "true" ]; then \
         echo "Installing ngrok..." && \
-        /usr/local/bin/install-ngrok ${NGROK_AUTH_TOKEN}; \
+        /tmp/user-setup/install-ngrok.sh ${NGROK_AUTH_TOKEN}; \
     fi
 
 # Cleanup

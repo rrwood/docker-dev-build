@@ -73,13 +73,13 @@ cd ~/setup
 
 ```bash
 # Install Claude CLI
-setup-claude
+~/setup/setup-claude.sh
 
 # Setup LiteLLM (use Gemini with Claude Code for free)
-setup-litellm
+~/setup/setup-litellm.sh
 
 # Install ngrok (if not done during build)
-install-ngrok
+~/setup/install-ngrok.sh
 ```
 
 ## Helper Scripts Location

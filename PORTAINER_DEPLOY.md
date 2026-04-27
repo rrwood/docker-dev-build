@@ -143,7 +143,7 @@ All setup scripts are located in `~/setup/`:
 
 ```bash
 # Inside container
-setup-litellm
+~/setup/setup-litellm.sh
 
 # Follow prompts to configure Google API key
 nano ~/.config/litellm/.env
@@ -159,7 +159,7 @@ source ~/.config/litellm/export-claude-env.sh
 
 ```bash
 # Inside container
-install-ngrok YOUR_AUTH_TOKEN
+~/setup/install-ngrok.sh YOUR_AUTH_TOKEN
 ```
 
 ### Change Password
