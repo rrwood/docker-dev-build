@@ -29,8 +29,9 @@ See **[PORTAINER_DEPLOY.md](PORTAINER_DEPLOY.md)** for complete Portainer deploy
 ## Documentation
 
 - **[PORTAINER_DEPLOY.md](PORTAINER_DEPLOY.md)** - Deploy to Portainer (Recommended) 🐳
+- **[SSH_SETUP_GUIDE.md](SSH_SETUP_GUIDE.md)** - Complete SSH key setup guide 🔑
+- **[QUICKSTART.md](QUICKSTART.md)** - Quick deployment guide ⚡
 - **[scripts/README.md](scripts/README.md)** - Helper scripts documentation 🛠️
-- **[PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)** - Project layout and file reference 📁
 
 ## Manual Deployment (Alternative)
 

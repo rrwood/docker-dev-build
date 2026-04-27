@@ -24,9 +24,6 @@ RUN apk add --no-cache \
     sudo \
     shadow
 
-# Set hostname in /etc/hostname
-RUN echo "${CONTAINER_HOSTNAME}" > /etc/hostname
-
 # Clone repository to get setup scripts
 RUN git clone --depth 1 --branch ${GITHUB_BRANCH} ${GITHUB_REPO} /tmp/setup-repo
 
@@ -68,6 +65,12 @@ RUN cp /home/${USERNAME}/setup/welcome-motd.sh /etc/profile.d/welcome.sh && \
 # Create a first-login marker
 RUN touch /home/${USERNAME}/.first_login && \
     chown ${USERNAME}:${USERNAME} /home/${USERNAME}/.first_login
+
+# Set hostname in /etc/hostname and /etc/hosts
+RUN echo "${CONTAINER_HOSTNAME}" > /etc/hostname && \
+    echo "127.0.0.1       localhost" > /etc/hosts && \
+    echo "::1             localhost" >> /etc/hosts && \
+    echo "127.0.1.1       ${CONTAINER_HOSTNAME}" >> /etc/hosts
 
 # Install ngrok if requested
 RUN if [ "$INSTALL_NGROK" = "true" ]; then \
