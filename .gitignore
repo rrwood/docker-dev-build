@@ -4,6 +4,7 @@
 !.env.example
 env.*
 !env.example
+!portainer.env
 user.env
 
 # Claude Code settings and project-specific instructions
