@@ -27,6 +27,7 @@ authorized_keys
 push.sh
 push.ps1
 deploy.sh
+README_PUSH_SCRIPT.txt
 
 # Generated files
 copy-ssh-keys.sh
