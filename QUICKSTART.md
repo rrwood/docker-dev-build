@@ -25,12 +25,14 @@
    USERNAME=devuser
    USER_PASSWORD=YOUR_SECURE_PASSWORD
    CONTAINER_NAME=docker-dev
-   HOSTNAME=docker-dev
+   CONTAINER_HOSTNAME=docker-dev
    CONTAINER_IP=192.168.111.15
    INSTALL_NGROK=false
    WORKSPACE_PATH=./workspace
    TIMEZONE=UTC
    ```
+   
+   **Note:** Use `CONTAINER_HOSTNAME` not `HOSTNAME` (reserved variable)
 
 4. **Deploy the stack**
    

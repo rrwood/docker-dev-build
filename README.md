@@ -28,10 +28,23 @@ See **[PORTAINER_DEPLOY.md](PORTAINER_DEPLOY.md)** for complete Portainer deploy
 
 ## Documentation
 
-- **[PORTAINER_DEPLOY.md](PORTAINER_DEPLOY.md)** - Deploy to Portainer (Recommended) 🐳
-- **[SSH_SETUP_GUIDE.md](SSH_SETUP_GUIDE.md)** - Complete SSH key setup guide 🔑
+### 📖 Getting Started
 - **[QUICKSTART.md](QUICKSTART.md)** - Quick deployment guide ⚡
-- **[scripts/README.md](scripts/README.md)** - Helper scripts documentation 🛠️
+- **[PORTAINER_DEPLOY.md](PORTAINER_DEPLOY.md)** - Complete Portainer deployment guide 🐳
+- **[DEPLOY_CHECKLIST.md](DEPLOY_CHECKLIST.md)** - Step-by-step deployment checklist ✅
+- **[PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)** - Overview and quick reference 📋
+
+### 🔐 SSH & Security
+- **[SSH_SETUP_GUIDE.md](SSH_SETUP_GUIDE.md)** - Complete SSH key setup (Windows/Linux/Mac) 🔑
+
+### 🔧 Troubleshooting
+- **[PORTAINER_HOSTNAME_RESERVED.md](PORTAINER_HOSTNAME_RESERVED.md)** - Why HOSTNAME doesn't work ⚠️
+- **[PORTAINER_CACHE_PURGE.md](PORTAINER_CACHE_PURGE.md)** - Clear Docker caches 🧹
+- **[TROUBLESHOOTING_PORTAINER.md](TROUBLESHOOTING_PORTAINER.md)** - General Portainer issues 🔍
+
+### 🛠️ Scripts & Tools
+- **[scripts/README.md](scripts/README.md)** - Build-time helper scripts
+- **[setup/README.md](setup/README.md)** - Post-deployment setup scripts (in container)
 
 ## Manual Deployment (Alternative)
 

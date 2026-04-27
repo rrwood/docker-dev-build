@@ -40,7 +40,7 @@ Click **Add environment variable** and configure:
 USERNAME=devuser
 USER_PASSWORD=YOUR_SECURE_PASSWORD_HERE
 CONTAINER_NAME=docker-dev
-HOSTNAME=my-dev-box                    # <-- Change this to your desired hostname
+CONTAINER_HOSTNAME=my-dev-box          # <-- Change this to your desired hostname
 CONTAINER_IP=192.168.111.15
 
 # Workspace & Timezone
@@ -54,6 +54,8 @@ NGROK_AUTH_TOKEN=
 # Repository Settings (usually don't change)
 GITHUB_REPO=https://github.com/rrwood/docker-dev-build.git
 GITHUB_BRANCH=main
+
+# IMPORTANT: Use CONTAINER_HOSTNAME not HOSTNAME (HOSTNAME is reserved by Docker/Portainer)
 ```
 
 ### Step 4: Deploy
