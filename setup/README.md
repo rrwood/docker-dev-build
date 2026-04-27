@@ -38,6 +38,7 @@ This script will:
 |--------|---------|
 | `change-password.sh` | Change your user password |
 | `generate-ssh-keys.sh` | Generate SSH keys for password-less access |
+| `set-hostname.sh` | Change container hostname (requires sudo) |
 | `setup-claude.sh` | Install Claude CLI |
 | `setup-litellm.sh` | Setup LiteLLM for Claude Code + Gemini |
 | `install-ngrok.sh` | Install ngrok (if not done during build) |

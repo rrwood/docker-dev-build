@@ -40,7 +40,7 @@ Click **Add environment variable** and configure:
 USERNAME=devuser
 USER_PASSWORD=YOUR_SECURE_PASSWORD_HERE
 CONTAINER_NAME=docker-dev
-HOSTNAME=docker-dev
+HOSTNAME=my-dev-box                    # <-- Change this to your desired hostname
 CONTAINER_IP=192.168.111.15
 
 # Workspace & Timezone

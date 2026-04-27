@@ -3,6 +3,7 @@ FROM alpine:latest
 # Build arguments for customization
 ARG USERNAME=devuser
 ARG USER_PASSWORD=changeme123
+ARG CONTAINER_HOSTNAME=docker-dev
 ARG INSTALL_NGROK=false
 ARG NGROK_AUTH_TOKEN=""
 ARG GITHUB_REPO=https://github.com/rrwood/docker-dev-build.git
@@ -22,6 +23,9 @@ RUN apk add --no-cache \
     git \
     sudo \
     shadow
+
+# Set hostname in /etc/hostname
+RUN echo "${CONTAINER_HOSTNAME}" > /etc/hostname
 
 # Clone repository to get setup scripts
 RUN git clone --depth 1 --branch ${GITHUB_BRANCH} ${GITHUB_REPO} /tmp/setup-repo
