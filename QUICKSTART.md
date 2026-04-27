@@ -44,9 +44,24 @@
    
    ```bash
    ssh devuser@192.168.111.15
+   # Use the password you set in USER_PASSWORD
    ```
 
-**That's it!** No manual setup scripts needed.
+6. **First login - Run setup scripts** (IMPORTANT!)
+   
+   ```bash
+   # Change your default password
+   cd ~/setup
+   ./change-password.sh
+   
+   # Generate SSH keys
+   ./generate-ssh-keys.sh
+   
+   # View all setup options
+   cat ~/setup/README.md
+   ```
+
+**That's it!** Your container is ready to use.
 
 ---
 

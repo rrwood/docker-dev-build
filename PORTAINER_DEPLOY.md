@@ -107,6 +107,36 @@ ssh devuser@192.168.111.15
 3. Connect as user `devuser`
 4. Execute: `su - devuser`
 
+### 🔐 Important First Steps
+
+After logging in for the first time, you'll see a welcome message with setup instructions.
+
+**1. Change Your Default Password (IMPORTANT!):**
+```bash
+cd ~/setup
+./change-password.sh
+```
+
+**2. Generate SSH Keys (Recommended):**
+```bash
+cd ~/setup
+./generate-ssh-keys.sh
+```
+
+**3. View Setup Guide:**
+```bash
+cat ~/setup/README.md
+```
+
+### Available Setup Scripts
+
+All setup scripts are located in `~/setup/`:
+
+- `change-password.sh` - Change your user password
+- `generate-ssh-keys.sh` - Generate SSH keys for password-less access
+- `container-info.sh` - Display container information
+- `README.md` - Complete setup guide
+
 ### Setup LiteLLM (Optional - for Claude Code + Gemini)
 
 ```bash

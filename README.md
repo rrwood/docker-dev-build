@@ -74,6 +74,22 @@ ssh devuser@192.168.111.15
 # Or: docker exec -it docker-dev su - devuser
 ```
 
+### 6. First Login Setup (IMPORTANT!)
+
+On first login, change your password and setup SSH keys:
+
+```bash
+# Change default password
+cd ~/setup
+./change-password.sh
+
+# Generate SSH keys
+./generate-ssh-keys.sh
+
+# View complete setup guide
+cat ~/setup/README.md
+```
+
 ## Configuration
 
 All configuration is done via environment variables in `.env` file:
