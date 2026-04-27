@@ -49,3 +49,6 @@ ngrok.yml
 *.local
 .DS_Store
 Thumbs.db
+
+# Archive folder for historical/troubleshooting docs
+docs/archive/
