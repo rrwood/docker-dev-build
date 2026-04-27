@@ -1,94 +1,71 @@
 #!/bin/bash
 #
-# Set Hostname Helper Script
-# Change the container hostname after deployment
+# Hostname Information and Instructions
+# Docker containers get their hostname from docker-compose.yml or Portainer
 #
-
-set -e
 
 clear
 echo "========================================"
-echo "  Change Container Hostname"
+echo "  Container Hostname Information"
 echo "========================================"
 echo ""
-
-# Check if running as root
-if [ "$(id -u)" -ne 0 ]; then
-    echo "⚠️  This script requires root privileges"
+echo "Current hostname: $(cat /etc/hostname 2>/dev/null || hostname)"
+echo "Actual hostname:  $(hostname)"
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "⚠️  You cannot change the hostname from inside a container."
+echo ""
+echo "The hostname is set by Docker at container creation time."
+echo "It comes from the 'hostname:' field in docker-compose.yml"
+echo "or the HOSTNAME environment variable in Portainer."
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "📝 To change your hostname:"
+echo ""
+echo "1. In Portainer UI:"
+echo "   - Go to: Stacks → your-stack-name → Editor"
+echo "   - Find environment variables section"
+echo "   - Set: HOSTNAME=your-desired-hostname"
+echo "   - Click 'Update the stack'"
+echo ""
+echo "2. Or edit .env file (if using docker-compose):"
+echo "   HOSTNAME=your-desired-hostname"
+echo ""
+echo "3. Redeploy the container:"
+echo "   In Portainer: Pull and redeploy"
+echo "   Or: docker-compose down && docker-compose up -d"
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "🔍 Current Configuration:"
+echo ""
+echo "Expected hostname from build: $(cat /etc/hostname 2>/dev/null || echo 'not set')"
+echo "Runtime hostname from Docker: $(hostname)"
+echo ""
+if [ "$(cat /etc/hostname)" != "$(hostname)" ]; then
+    echo "⚠️  MISMATCH DETECTED!"
     echo ""
-    read -p "Run with sudo? [Y/n]: " -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]] || [[ -z $REPLY ]]; then
-        sudo "$0" "$@"
-        exit $?
-    else
-        echo "❌ Cancelled"
-        exit 1
-    fi
-fi
-
-echo "Current hostname: $(hostname)"
-echo ""
-echo "⚠️  Changing the hostname will:"
-echo "   - Update /etc/hostname"
-echo "   - Update /etc/hosts"
-echo "   - Require container restart to fully apply"
-echo ""
-
-# Get new hostname
-read -p "Enter new hostname: " NEW_HOSTNAME
-
-# Validate hostname
-if [[ ! $NEW_HOSTNAME =~ ^[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]$ ]]; then
+    echo "The hostname from the Dockerfile (/etc/hostname) doesn't match"
+    echo "the runtime hostname set by Docker."
     echo ""
-    echo "❌ Invalid hostname!"
-    echo "   Hostname must:"
-    echo "   - Start and end with alphanumeric characters"
-    echo "   - Only contain letters, numbers, and hyphens"
-    echo "   - Not start or end with a hyphen"
-    exit 1
+    echo "This happens when:"
+    echo "- HOSTNAME environment variable wasn't set in Portainer"
+    echo "- docker-compose.yml 'hostname:' field is wrong"
+    echo "- Container was created before hostname was configured"
+    echo ""
+    echo "Solution: Set HOSTNAME in Portainer and redeploy"
 fi
-
 echo ""
-read -p "Set hostname to '$NEW_HOSTNAME'? [Y/n]: " -n 1 -r
-echo
-if [[ ! $REPLY =~ ^[Yy]$ ]] && [[ ! -z $REPLY ]]; then
-    echo "❌ Cancelled"
-    exit 0
-fi
-
-# Set hostname
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
-echo "🔧 Setting hostname..."
-
-# Update /etc/hostname
-echo "$NEW_HOSTNAME" > /etc/hostname
-
-# Update /etc/hosts
-sed -i "s/^127.0.1.1.*/127.0.1.1\t$NEW_HOSTNAME/" /etc/hosts || \
-    echo "127.0.1.1	$NEW_HOSTNAME" >> /etc/hosts
-
-# Apply immediately (won't survive restart without docker-compose change)
-hostname "$NEW_HOSTNAME"
-
+echo "💡 Quick Fix:"
 echo ""
-echo "========================================"
-echo "✅ Hostname Updated!"
-echo "========================================"
+echo "In Portainer, add this environment variable:"
+echo "   HOSTNAME=my-custom-hostname"
 echo ""
-echo "Current hostname: $(hostname)"
+echo "Then click: Stacks → your-stack → Pull and redeploy"
 echo ""
-echo "⚠️  IMPORTANT: To make this permanent:"
-echo ""
-echo "1. Update your docker-compose.yml or Portainer environment variable:"
-echo "   HOSTNAME=$NEW_HOSTNAME"
-echo ""
-echo "2. Redeploy the container in Portainer:"
-echo "   Stacks → docker-dev → Pull and redeploy"
-echo ""
-echo "OR restart the container:"
-echo "   docker restart $(hostname)"
-echo ""
-echo "💡 Until you update the configuration and redeploy,"
-echo "   the hostname will revert on container restart."
+echo "The new container will have your hostname!"
 echo ""
