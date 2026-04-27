@@ -212,8 +212,7 @@ Before pushing to production:
 | `CONTAINER_NAME` | `docker-dev` | Container name |
 | `HOSTNAME` | `docker-dev` | Container hostname |
 | `CONTAINER_IP` | `192.168.111.15` | Container IP address |
-| `INSTALL_CLAUDE` | `true` | Install Claude CLI |
-| `INSTALL_NGROK` | `false` | Install ngrok |
+| `INSTALL_NGROK` | `false` | Install ngrok during build |
 | `NGROK_AUTH_TOKEN` | _(empty)_ | ngrok auth token |
 | `WORKSPACE_PATH` | `./workspace` | Host workspace path |
 | `TIMEZONE` | `UTC` | Container timezone |

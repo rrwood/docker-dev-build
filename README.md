@@ -87,8 +87,7 @@ HOSTNAME=docker-dev                # Hostname
 CONTAINER_IP=192.168.111.15       # IP address
 
 # Optional Components
-INSTALL_CLAUDE=true               # Install Claude CLI
-INSTALL_NGROK=false              # Install ngrok
+INSTALL_NGROK=false              # Install ngrok during build
 NGROK_AUTH_TOKEN=                # ngrok auth token
 
 # Workspace

@@ -47,8 +47,7 @@ CONTAINER_IP=192.168.111.15
 WORKSPACE_PATH=./workspace
 TIMEZONE=America/New_York
 
-# Optional Components
-INSTALL_CLAUDE=true
+# Optional Components (ngrok only - Claude installed via setup-claude script post-deployment)
 INSTALL_NGROK=false
 NGROK_AUTH_TOKEN=
 

@@ -27,7 +27,6 @@
    CONTAINER_NAME=docker-dev
    HOSTNAME=docker-dev
    CONTAINER_IP=192.168.111.15
-   INSTALL_CLAUDE=true
    INSTALL_NGROK=false
    WORKSPACE_PATH=./workspace
    TIMEZONE=UTC

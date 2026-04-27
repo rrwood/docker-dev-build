@@ -3,7 +3,6 @@ FROM alpine:latest
 # Build arguments for customization
 ARG USERNAME=devuser
 ARG USER_PASSWORD=changeme123
-ARG INSTALL_CLAUDE=true
 ARG INSTALL_NGROK=false
 ARG NGROK_AUTH_TOKEN=""
 ARG GITHUB_REPO=https://github.com/rrwood/docker-dev-build.git
@@ -26,12 +25,6 @@ RUN apk add --no-cache \
 
 # Clone repository to get setup scripts
 RUN git clone --depth 1 --branch ${GITHUB_BRANCH} ${GITHUB_REPO} /tmp/setup-repo
-
-# Install Claude CLI if requested
-RUN if [ "$INSTALL_CLAUDE" = "true" ]; then \
-        echo "Installing Claude CLI..." && \
-        curl -fsSL https://claude.ai/install.sh | sh; \
-    fi
 
 # Setup SSH - disable root login, allow user login with password and keys
 RUN ssh-keygen -A && \
