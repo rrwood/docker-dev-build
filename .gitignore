@@ -1,0 +1,37 @@
+# Environment files with secrets
+.env
+*.env
+!.env.example
+user.env
+
+# Claude Code settings and project-specific instructions
+.claude/
+CLAUDE.md
+
+# LiteLLM config (if you want to keep it local)
+.config/
+
+# Workspace data
+workspace/
+
+# SSH keys
+*.pem
+*.key
+id_rsa*
+authorized_keys
+
+# Docker volumes
+*.log
+
+# Generated files (created by setup scripts)
+copy-ssh-keys.sh
+copy-ssh-keys.ps1
+PORTAINER_DEPLOYMENT.md
+
+# Docker/Portainer specific (may be customized per user)
+# Uncomment if you don't want to version these:
+# Dockerfile
+# docker-compose.yml
+
+# User-specific files
+ngrok.yml
